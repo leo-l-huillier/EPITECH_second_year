@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2023
+## 201yams
+## File description:
+## 201yams
+##
+
+import sys, math
+
+def spawn(nb):
+    spawn = 0
+    if nb_1 == nb:
+        spawn += 1
+    if nb_2 == nb:
+        spawn += 1
+    if nb_3 == nb:
+        spawn += 1
+    if nb_4 == nb:
+        spawn += 1
+    if nb_5 == nb:
+        spawn += 1
+    return spawn
+
+def error_handling(char, check = 0):
+    try:
+        nb = int(char)
+    except:
+        raise Exception("dice have to be from 1 to 6\n")
+    if check == 1:
+        if nb > 6 or nb <= 0:
+            raise Exception("dice have to be from 1 to 6\n")
+    if nb > 6 or nb < 0:
+        raise Exception("dice have to be from 1 to 6\n")
+    return nb
+
+def help():
+    print("USAGE")
+    print("\t./201yams d1 d2 d3 d4 d5 c\n")
+    print("DESCRIPTION")
+    print("\td1\tvalue of the first die (0 if not thrown)")
+    print("\td2\tvalue of the second die (0 if not thrown)")
+    print("\td3\tvalue of the third die (0 if not thrown)")
+    print("\td4\tvalue of the fourth die (0 if not thrown)")
+    print("\td5\tvalue of the fifth die (0 if not thrown)")
+    print("\tc\texpected combination")
+
+def result(dice, nb):
+    results = 0.0
+    apparition = spawn(nb)
+    if dice < apparition:
+        resultat = 1
+    else:
+        for n in range(dice - apparition, 6 - apparition):
+            results += binomial(5 - apparition, n)
+    return results * 100
+
+def binomial(a, b):
+    try:
+        resultat = (math.factorial(a) / (math.factorial(b) * math.factorial(a - b))) * pow((1 / 6), b) * pow((5 / 6), (a - b))
+    except:
+        raise Exception("error\n")
+    return resultat
+
+def full(nb_1, nb_2):
+    resultat = 1.0
+    spawn01 = spawn(nb_1)
+    spawn02 = spawn(nb_2)
+    if (spawn01 > 3):
+        spawn01 = 3
+    if (spawn02 > 2):
+        spawn02 = 2
+    for i in range(5 - spawn01 - spawn02, 6 - spawn01 - spawn02):
+        resultat *= binomial(5 - spawn01 - spawn02, i)
+    if resultat > 0.1:
+        resultat = 0.1
+    return resultat * 1000
+
+def straight(nb):
+    arr = set()
+    arr.update([nb_1, nb_2, nb_3, nb_4, nb_5])
+    if len(arr) == 1:
+        arr.add(0)
+    pres = 6
+    if arr.issuperset([nb]):
+        pres = 5
+    if arr.issuperset([0]):
+        results = math.factorial(pres - int(len(arr))) / pow(6, pres - int(len(arr)))
+    else:
+        results = math.factorial(pres - int(len(arr))) / pow(6, pres - int(len(arr)))
+    return results * 100
+
+
+def calculus(string):
+    arg = string.split('_')
+    combination = arg[0]
+    if len(arg) == 2:
+        nb = error_handling(arg[1], 1)
+        print("Chances to get a " + str(nb) + " " + combination, end='')
+        if combination == "pair":
+            results = result(2, nb)
+        elif combination == "three":
+            results = result(3, nb)
+            print("-of-a-kind", end='')
+        elif combination == "four":
+            results = result(4, nb)
+            print("-of-a-kind", end='')
+        elif combination == "yams":
+            results = result(5, nb)
+        elif combination == "straight":
+            results = straight(nb)
+        else:
+            raise Exception("invalid combination\n")
+        print(": " + "%.2f" % results + "%")
+    elif len(arg) == 3:
+        if combination == "full":
+            nb1 = error_handling(arg[1], 1)
+            nb2 = error_handling(arg[2], 1)
+            results = full(nb1, nb2)
+        else:
+            raise Exception("only combination 'full' need 2 excepted value\n")
+        print("Chances to get a " + str(nb1) + " full of "
+              + str(nb2) + ": " + "%.2f" % results + "%")
+    else:
+        raise Exception("invalid combination\n")
+
+try:
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "-h":
+            help()
+            exit(0)
+    elif len(sys.argv) == 7:
+        resultat = 0.0
+        combination = ""
+        nb_1 = error_handling(sys.argv[1])
+        nb_2 = error_handling(sys.argv[2])
+        nb_3 = error_handling(sys.argv[3])
+        nb_4 = error_handling(sys.argv[4])
+        nb_5 = error_handling(sys.argv[5])
+        calculus(sys.argv[6])
+    else:
+        raise Exception("Invalid number of argument\n")
+except Exception as error:
+    sys.stdout.write(str(error))
+    exit(84)

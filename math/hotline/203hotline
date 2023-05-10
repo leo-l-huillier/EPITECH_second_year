@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2023
+## 203
+## File description:
+## 203Hotline
+##
+import sys
+import math
+import time
+
+def binomial_coefficient(n, k):
+    if k > n:
+        return 0
+    if k == 0 or k == n:
+        return 1
+    numerator = 1
+    denominator = 1
+    for i in range(1, k + 1):
+        numerator *= n - i + 1
+        denominator *= i
+    return numerator // denominator
+
+def binomial_distribution(n, p):
+    result = []
+    q = 1 - p
+    for k in range(n + 1):
+        coeff = binomial_coefficient(3500, k)
+        prob = coeff * (p ** k) * (q ** (3500 - k))
+        result.append(prob)
+    return result
+
+def poisson_distribution(n, lambd):
+    distribution = [0] * (n+1)
+    distribution[0] = math.exp(-lambd)
+    for i in range(1, n+1):
+        distribution[i] = distribution[i-1] * lambd / i
+    return distribution
+
+def main():
+    if len(sys.argv) == 3:
+        n = int(sys.argv[1])
+        k = int(sys.argv[2])
+        result = binomial_coefficient(n, k)
+        print(f"{k}-combinations of a set of size {n}:")
+        print(result)
+        return
+
+    if len(sys.argv) == 2:
+        n = 50
+        d = int(sys.argv[1])
+        p = 1/ ((8 * 3600) / d)
+        pp = 3500 * d / (8 * 3600)
+        print("Binomial distribution:")
+        start_time = time.time()
+        distribution = binomial_distribution(n, p)
+        for i, prob in enumerate(distribution):
+            if (i % 5 == 4 or i == 50):
+                print(f"{i} -> {prob:.3f}", end="\n")
+            else:
+                print(f"{i} -> {prob:.3f}", end=" ")
+        overload = sum(distribution[26:])
+        print(f"Overload: {overload:.1%}")
+        print(f"Computation time: {(time.time() - start_time)*1000:.2f} ms")
+        print("\n", end="")
+
+        print("Poisson distribution:")
+        start_time = time.time()
+        distribution = poisson_distribution(n, pp)
+        for i, prob in enumerate(distribution):
+            if (i % 5 == 4 or i == 50):
+                print(f"{i} -> {prob:.3f}", end="\n")
+            else:
+                print(f"{i} -> {prob:.3f}", end=" ")
+        overload = sum(distribution[26:])
+        print(f"Overload: {overload:.1%}")
+        print(f"Computation time: {(time.time() - start_time)*1000:.2f} ms")
+        return
+
+    print("USAGE:")
+    print("./203hotline [n k | d]")
+    sys.exit(84)
+
+if __name__ == "__main__":
+    main()
